@@ -1,4 +1,4 @@
-# Project Title
+# Online Store Workshop
 
 <!-- HOW TO USE THIS TEMPLATE
      Save it as README.md at the root of your project, next to pom.xml. Replace every comment like this one
@@ -13,6 +13,11 @@
 
 <!-- Three to five sentences. What the application does, who uses it, what problem it solves.
      Write it for someone who has never seen the workbook: a recruiter, a classmate, you in six months. -->
+This is a simple shooping application that works entirely wihin the CLI. 
+It gets its inventory from a .csv file, the user can look at it and add as many items to their cart as they want.
+
+They can look at the cart, which calculates the total cost and either remove items or proceed to check out.
+The user is then prompted to pay with a chosen amount of cash, then the change is calculated and a receipt is printed on screen and saved as a file in the /receips folder with timestamp included.
 
 ## Features
 
@@ -23,9 +28,9 @@
      - Shows every product in the store
      - Searches products by name (bonus) -->
 
--
--
--
+- Loads inventory from outside files.
+- Fully functional shopping cart.
+- Prints and saves backups of all receipts.
 
 ## User Stories
 
@@ -33,8 +38,9 @@
      As a [type of user], I want [some goal] so that [some reason].
      Same text as the cards on your GitHub project board. -->
 
-- As a ..., I want ..., so that ...
-- As a ..., I want ..., so that ...
+- As a costumer, I want look at all the products, so that I can buy whichever I want.
+- As a costumer, I want to see a summary of my purchase, so that I know how much I have to pay.
+- As an owner, I want to keep a copy of every receipt, so I can keep track of my sales.
 
 ## Setup
 
@@ -53,14 +59,8 @@
 
 ### Data and configuration
 
-<!-- OPTIONAL. Anything the program needs that is not code: data files and where they must sit, files the
-     program creates, a database script to run first, a settings file to edit (connection, port).
-     If there is nothing, delete this subsection, heading included.
-     Example:
-     - `inventory.csv` sits at the project root, next to `pom.xml`. The program reads it at start.
-     - `logs.txt` is created by the program at the project root on the first run. -->
-
--
+- `products.csv` sits at the project root, next to `pom.xml`. The program reads it at start.
+- `receips` package sits at the project root, already contains example receipt `202610301431.txt`.
 
 ## Technologies Used
 
@@ -82,10 +82,11 @@
      5. Commit the images with the rest of your work (Git > Commit shows them as unversioned files: tick them).
      Optional GIF: LICEcap (free, Windows and Mac, <https://www.cockos.com/licecap/>) records a region of the
      screen straight to a .gif. Keep it under 10 seconds and under 10 MB, save it into `images`. -->
+![Search and Add](images/search&add.png)
 
-![Main menu](images/menu.png)
+![Cart and Remove](images/cart&remove.png)
 
-![One feature in action](images/feature.png)
+![Checkout and Receipt](images/checkout&receipt.png)
 
 ## A piece of code I am proud of
 
@@ -94,31 +95,48 @@
      demo day and what you talk about in an interview. -->
 
 ```java
+public static HashMap<String, Integer> getQuantities(ArrayList<Product> cart) {
+        HashMap<String, Integer> quantities = new HashMap<>();
 
+        for (Product product : cart) {
+            quantities.put(
+                    product.getId(),
+                    quantities.getOrDefault(product.getId(), 0) + 1
+            );
+        }
+
+        return quantities;
+    }
 ```
+This method creates a HashMap which keeps track of the amount of each product in the cart, so they don't have to be displayed multiple times.
+
+I wrote it as a method since I found I need to use it both when displaying the cart and building the receipt.
+
+Overall I liked that I was able to use both ArrayLists and HashMaps to their strengths in this project.
+
 
 ## Future Work
 
 <!-- What you would add or fix next, one bullet each. Unfinished bonuses belong here. -->
 
--
--
+- Remove items from inventory once bought
+- Ability to add or remove from cart in bulk
 
 ## Resources
 
 <!-- What helped you: the workbook, the week's hub pages, a tutorial, a documentation page. Real links. -->
 
 - Java YearUp Fall 2026 hub: <https://raymaroun.github.io/yearup-java-fall2026/>
--
+- Previous com.pluralsight repositories of mine.
 
 ## Author
 
 <!-- Your name and, if you like, your GitHub profile link. For a team workshop, one line per person with what each one built. -->
 
-- **Your Name**
+- **Fabricio Baliño @ https://github.com/FabricioB44**
 
 ## Thanks
 
 <!-- Optional. The people who helped: the instructor, a classmate who debugged with you, a mentor. -->
 
-- Thank you to ... for ...
+- Thank you to Raymond Maroun for guiding me with Java for the past couple weeks!

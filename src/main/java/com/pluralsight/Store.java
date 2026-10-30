@@ -20,10 +20,13 @@ public class Store {
         loadInventory("products.csv", inventory);
 
         Scanner scanner = new Scanner(System.in);
+
+        // Turned mainMenu into it's own method so it's easier to go back to it from other submenus
         mainMenu(inventory, cart, scanner);
         scanner.close();
     }
 
+    // Loads inventory, splits each line and creates a new product with the values taken after the .split
     public static void loadInventory(String fileName, ArrayList<Product> inventory) {
         try {
             FileReader fileReader = new FileReader(fileName);
@@ -48,6 +51,7 @@ public class Store {
         }
     }
 
+    // mainMenu, no real changes from the started code beside a System.exit to eliminate some weird edge cases.
     public static void mainMenu(ArrayList<Product> inventory,
                                        ArrayList<Product> cart,
                                        Scanner scanner) {
@@ -80,6 +84,7 @@ public class Store {
     }
 
 
+    // Displays all the products, since the list is long this list is separated from its subsequent menu since I dont want it printing every time.
     public static void displayProducts(ArrayList<Product> inventory,
                                        ArrayList<Product> cart,
                                        Scanner scanner) {
@@ -99,6 +104,7 @@ public class Store {
         displayProductsMenu(inventory, cart, scanner);
     }
 
+    // Reworked main menu as the product display menu since its while loop makes it easier to add multiple products at once.
     public static void displayProductsMenu(ArrayList<Product> inventory,
                                            ArrayList<Product> cart, Scanner scanner) {
         int choice = -1;
@@ -129,6 +135,7 @@ public class Store {
         }
     }
 
+    // User inputs ID and using the findProductByID method either adds to card or displays error message
     public static void addToCart(ArrayList<Product> inventory,
                                  ArrayList<Product> cart, Scanner scanner) {
         System.out.print("\nPlease write the ID of the product you'd like to add to your cart: ");
@@ -146,6 +153,7 @@ public class Store {
         displayProductsMenu(inventory, cart, scanner);
     }
 
+    // Similar to displayProducts but without unnecessary info and with a hash to keep track of quantities, and unlike displayProducts since its not as long it prints after each user choice.
     public static void displayCart(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
         if (cart.isEmpty()){
             System.out.println("\nYou have no items in your cart.");
@@ -186,7 +194,7 @@ public class Store {
         displayCartMenu(inventory, cart, scanner, totalAmount);
     }
 
-
+    // Similar to displayProductsMenu, added option to remove individual items from cart
     public static void displayCartMenu(ArrayList<Product> inventory,
                                            ArrayList<Product> cart, Scanner scanner, double totalAmount ) {
         int choice = -1;
@@ -219,6 +227,7 @@ public class Store {
         }
     }
 
+    // Promps user for the $$$, prints the receipt and creates a file copy of it
     public static void checkOut(ArrayList<Product> inventory,
                                 ArrayList<Product> cart,
                                 double totalAmount,
@@ -247,6 +256,7 @@ public class Store {
         displayCartMenu(inventory, cart, scanner, totalAmount);
     }
 
+    // Used twice, once to print on screen and once with BufferedWriter in logReceipt() for the file copy.
     public static String buildReceipt(
             ArrayList<Product> cart,
             double totalAmount,
@@ -294,6 +304,7 @@ public class Store {
         return receipt.toString();
     }
 
+    // Logs date and time and creates file copy of the receipt
     public static void logReceipt(ArrayList<Product> cart,
                                     double totalAmount,
                                     double cashAmount) {
@@ -316,6 +327,7 @@ public class Store {
         }
     }
 
+    // Extra bonus method I made to remove individual items, pretty similar to addCart()
     public static void removeFromCart(ArrayList<Product> inventory,
                                 ArrayList<Product> cart,
                                 Scanner scanner) {
@@ -334,7 +346,7 @@ public class Store {
         displayCart(inventory, cart, scanner);
     }
 
-
+    // Used to find by ID within inventory to add items to cart and also within cart to remove items
     public static Product findProductById(String id, ArrayList<Product> inventory) {
         for (Product product : inventory){
             if (id.equals(product.getId())){
@@ -344,6 +356,7 @@ public class Store {
         return null;
     }
 
+    // Used twice when printing the cart and the receipt, gets the quantities of each item on cart.
     public static HashMap<String, Integer> getQuantities(ArrayList<Product> cart) {
         HashMap<String, Integer> quantities = new HashMap<>();
 
