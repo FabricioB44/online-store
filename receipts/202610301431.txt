@@ -1,0 +1,11 @@
+NAME                                     QTY    PRICE     
+----------------------------------------------------------
+Telestrations Board Game                 x1     $17.99    
+Desktop PC Computer Intel Core i5        x2     $278.00   
+Wireless Charger iPhone                  x1     $12.99    
+----------------------------------------------------------
+Total Price: $308.98
+Cash Paid: $350.00
+Change: $41.02
+----------------------------------------------------------
+Thank you for shopping with us!
