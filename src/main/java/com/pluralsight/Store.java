@@ -161,7 +161,7 @@ public class Store {
      */
     public static void displayCart(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
         if (cart.isEmpty()){
-            System.out.println("You have no items in your cart!\n");
+            System.out.println("\nYou have no items in your cart!");
             mainMenu(inventory, cart, scanner);
         }
 
@@ -169,10 +169,10 @@ public class Store {
                 "ID", "NAME", "PRICE", "DEPARTMENT");
         System.out.println("--------------------------------------------------------------------------");
 
-        double totalPrice = 0.00;
+        double totalAmount = 0.00;
 
         for (Product product : cart) {
-            totalPrice += product.getPrice();
+            totalAmount += product.getPrice();
             System.out.printf("%-10s %-40s $%-9.2f %-15s%n",
                     product.getId(),
                     product.getName(),
@@ -181,9 +181,9 @@ public class Store {
         }
 
         System.out.println("-------------------------------------------------------------------------");
-        System.out.printf("Total Price: %.2f", totalPrice);
+        System.out.printf("Total Price: %.2f\n", totalAmount);
 
-        // displayProductsMenu(cart, scanner);
+        displayCartMenu(inventory, cart, scanner, totalAmount);
 
 
         // TODO:
@@ -193,6 +193,36 @@ public class Store {
         //   • if C, call checkOut(cart, totalAmount, scanner)
     }
 
+
+    public static void displayCartMenu(ArrayList<Product> inventory,
+                                           ArrayList<Product> cart, Scanner scanner, double totalAmount) {
+        int choice = -1;
+        while (choice != 4) {
+            System.out.println("\nWhat would you like to do?");
+            System.out.println("1. Check out your cart");
+            System.out.println("2. Remove item from cart");
+            System.out.println("3. Go back to the main menu");
+            System.out.println("4. Exit");
+            System.out.print("Your choice: ");
+
+            if (!scanner.hasNextInt()) {
+                System.out.println("Please enter 1, 2, 3 or 4.");
+                scanner.nextLine();                 // discard bad input
+                continue;
+            }
+            choice = scanner.nextInt();
+            scanner.nextLine();                     // clear newline
+
+            switch (choice) {
+                case 1 -> checkOut(inventory, cart, totalAmount, scanner);
+                //case 3 -> removeFromCart(cart, scanner);
+                case 3 -> mainMenu(inventory, cart, scanner);
+                case 4 -> System.out.println("Thank you for shopping with us!");
+                default -> System.out.println("Invalid choice!");
+            }
+        }
+    }
+
     /**
      * Handles the checkout process:
      * 1. Confirm that the user wants to buy.
@@ -200,10 +230,42 @@ public class Store {
      * 3. Display a simple receipt.
      * 4. Clear the cart.
      */
-    public static void checkOut(ArrayList<Product> cart,
+    public static void checkOut(ArrayList<Product> inventory,
+                                ArrayList<Product> cart,
                                 double totalAmount,
                                 Scanner scanner) {
-        // TODO: implement steps listed above
+        System.out.println("\nHow much cash will you be paying with?");
+        double cashAmount = Double.parseDouble(scanner.nextLine());
+        if (cashAmount >= totalAmount) {
+            printReceipt(cart, totalAmount, cashAmount);
+        } else {
+            System.out.println("\nNot enough cash to complete the transaction!");
+            displayCartMenu(inventory, cart, scanner, totalAmount);
+        }
+    }
+
+    public static void printReceipt(ArrayList<Product> cart,
+                                double totalAmount,
+                                double cashAmount) {
+        System.out.printf("\n%-40s %-10s",
+                "NAME", "PRICE");
+        System.out.println("--------------------------------------------------------------------------\n");
+
+        for (Product product : cart) {
+            System.out.printf("%-40s $%-9.2f\n",
+                    product.getName(),
+                    product.getPrice());
+        }
+
+        System.out.println("-------------------------------------------------------------------------");
+        System.out.printf("Total Price: %.2f\n", totalAmount);
+        System.out.printf("Cash Paid: %.2f\n", cashAmount);
+        double changeAmount = cashAmount - totalAmount;
+        System.out.printf("Change: %.2f\n", changeAmount);
+
+        System.out.println("-------------------------------------------------------------------------");
+        System.out.println("Thank you for shopping with us!");
+
     }
 
 
