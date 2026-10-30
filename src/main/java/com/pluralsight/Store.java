@@ -26,31 +26,8 @@ public class Store {
         // Load inventory from the data file (pipe-delimited: SKU|Product Name|Price|Department)
         loadInventory("products.csv", inventory);
 
-        // Main menu loop
         Scanner scanner = new Scanner(System.in);
-        int choice = -1;
-        while (choice != 3) {
-            System.out.println("\nWelcome to the Online Store!");
-            System.out.println("1. Show Products");
-            System.out.println("2. Show Cart");
-            System.out.println("3. Exit");
-            System.out.print("Your choice: ");
-
-            if (!scanner.hasNextInt()) {
-                System.out.println("Please enter 1, 2, or 3.");
-                scanner.nextLine();                 // discard bad input
-                continue;
-            }
-            choice = scanner.nextInt();
-            scanner.nextLine();                     // clear newline
-
-            switch (choice) {
-                case 1 -> displayProducts(inventory, cart, scanner);
-                case 2 -> displayCart(cart, scanner);
-                case 3 -> System.out.println("Thank you for shopping with us!");
-                default -> System.out.println("Invalid choice!");
-            }
-        }
+        mainMenu(inventory, cart, scanner);
         scanner.close();
     }
 
@@ -86,10 +63,35 @@ public class Store {
         }
     }
 
-    /**
-     * Displays all products and lets the user add one to the cart.
-     * Typing X returns to the main menu.
-     */
+    public static void mainMenu(ArrayList<Product> inventory,
+                                       ArrayList<Product> cart,
+                                       Scanner scanner) {
+        int choice = -1;
+        while (choice != 3) {
+            System.out.println("\nWelcome to the Online Store!");
+            System.out.println("1. Show Products");
+            System.out.println("2. Show Cart");
+            System.out.println("3. Exit");
+            System.out.print("Your choice: ");
+
+            if (!scanner.hasNextInt()) {
+                System.out.println("Please enter 1, 2, or 3.");
+                scanner.nextLine();                 // discard bad input
+                continue;
+            }
+            choice = scanner.nextInt();
+            scanner.nextLine();                     // clear newline
+
+            switch (choice) {
+                case 1 -> displayProducts(inventory, cart, scanner);
+                case 2 -> displayCart(cart, scanner);
+                case 3 -> System.out.println("Thank you for shopping with us!");
+                default -> System.out.println("Invalid choice!");
+            }
+        }
+    }
+
+
     public static void displayProducts(ArrayList<Product> inventory,
                                        ArrayList<Product> cart,
                                        Scanner scanner) {
@@ -107,10 +109,6 @@ public class Store {
         }
 
         displayProductsMenu(inventory, cart, scanner);
-
-
-        // TODO: show each product (id, name, price),
-        //       prompt for an id, find that product, add to cart
     }
 
     public static void displayProductsMenu(ArrayList<Product> inventory,
@@ -133,7 +131,7 @@ public class Store {
 
             switch (choice) {
                 case 1 -> addToCart(inventory, cart, scanner);
-                case 2 -> displayCart(cart, scanner);
+                case 2 -> mainMenu(inventory, cart, scanner);
                 case 3 -> System.out.println("Thank you for shopping with us!");
                 default -> System.out.println("Invalid choice!");
             }
@@ -145,13 +143,12 @@ public class Store {
         System.out.print("\nPlease write the ID of the product you'd like to add to your cart: ");
         String selectedID = scanner.nextLine();
 
-        for (Product product : inventory){
-            if (selectedID.equals(product.getId())){
-                System.out.printf("\n%s successfully added to your cart!\n", product.getName());
-                displayProductsMenu(inventory, cart, scanner);
-                return;
-            }
-        }
+        Product foundProduct = findProductById(selectedID, inventory);
+        if (foundProduct != null) {
+            System.out.printf("\n%s successfully added to your cart!\n", foundProduct.getName());
+            displayProductsMenu(inventory, cart, scanner);
+            return;
+        };
 
         System.out.println("\nProduct ID not found.");
         displayProductsMenu(inventory, cart, scanner);
@@ -188,7 +185,11 @@ public class Store {
      * @return the matching Product, or null if not found
      */
     public static Product findProductById(String id, ArrayList<Product> inventory) {
-        // TODO: loop over the list and compare ids
+        for (Product product : inventory){
+            if (id.equals(product.getId())){
+                return product;
+            }
+        }
         return null;
     }
 }
