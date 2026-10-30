@@ -5,16 +5,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Starter code for the Online Store workshop.
- * Learners will complete the TODO sections to make the program work.
- * <p>
- * What is already done for you: the two lists, the Home Screen loop and
- * the method headers. Each TODO says what that method has to do.
- * Product.java is complete; products.csv sits at the project root.
- * You will need extra imports (for example java.io.BufferedReader,
- * java.io.FileReader, java.io.IOException) as you fill the TODOs in.
- */
 public class Store {
 
     public static void main(String[] args) {
@@ -31,14 +21,6 @@ public class Store {
         scanner.close();
     }
 
-    /**
-     * Reads product data from a file and populates the inventory list.
-     * File format (pipe-delimited), the first line is a header row:
-     * SKU|Product Name|Price|Department
-     * <p>
-     * Example line:
-     * AV1051|JBL Bluetooth Speaker|89.95|Audio Video
-     */
     public static void loadInventory(String fileName, ArrayList<Product> inventory) {
         try {
             FileReader fileReader = new FileReader(fileName);
@@ -155,10 +137,7 @@ public class Store {
         displayProductsMenu(inventory, cart, scanner);
     }
 
-    /**
-     * Shows the contents of the cart, calculates the total,
-     * and offers the option to check out.
-     */
+
     public static void displayCart(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
         if (cart.isEmpty()){
             System.out.println("\nYou have no items in your cart!");
@@ -184,18 +163,11 @@ public class Store {
         System.out.printf("Total Price: %.2f\n", totalAmount);
 
         displayCartMenu(inventory, cart, scanner, totalAmount);
-
-
-        // TODO:
-        //   • list each product in the cart
-        //   • compute the total cost
-        //   • ask the user whether to check out (C) or return (X)
-        //   • if C, call checkOut(cart, totalAmount, scanner)
     }
 
 
     public static void displayCartMenu(ArrayList<Product> inventory,
-                                           ArrayList<Product> cart, Scanner scanner, double totalAmount) {
+                                           ArrayList<Product> cart, Scanner scanner, double totalAmount ) {
         int choice = -1;
         while (choice != 4) {
             System.out.println("\nWhat would you like to do?");
@@ -215,7 +187,7 @@ public class Store {
 
             switch (choice) {
                 case 1 -> checkOut(inventory, cart, totalAmount, scanner);
-                //case 3 -> removeFromCart(cart, scanner);
+                case 2 -> removeFromCart(inventory, cart, scanner);
                 case 3 -> mainMenu(inventory, cart, scanner);
                 case 4 -> System.out.println("Thank you for shopping with us!");
                 default -> System.out.println("Invalid choice!");
@@ -223,25 +195,28 @@ public class Store {
         }
     }
 
-    /**
-     * Handles the checkout process:
-     * 1. Confirm that the user wants to buy.
-     * 2. Accept payment and calculate change.
-     * 3. Display a simple receipt.
-     * 4. Clear the cart.
-     */
     public static void checkOut(ArrayList<Product> inventory,
                                 ArrayList<Product> cart,
                                 double totalAmount,
                                 Scanner scanner) {
-        System.out.println("\nHow much cash will you be paying with?");
-        double cashAmount = Double.parseDouble(scanner.nextLine());
+        double cashAmount;
+        while (true) {
+            System.out.println("\nHow much cash will you be paying with?");
+
+            try {
+                cashAmount = Double.parseDouble(scanner.nextLine());
+                break; // valid input, exit loop
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid dollar amount.");
+            }
+        }
+
         if (cashAmount >= totalAmount) {
             printReceipt(cart, totalAmount, cashAmount);
-        } else {
-            System.out.println("\nNot enough cash to complete the transaction!");
-            displayCartMenu(inventory, cart, scanner, totalAmount);
+            cart.clear();
         }
+        System.out.println("\nNot enough cash to complete the transaction!");
+        displayCartMenu(inventory, cart, scanner, totalAmount);
     }
 
     public static void printReceipt(ArrayList<Product> cart,
@@ -265,8 +240,26 @@ public class Store {
 
         System.out.println("-------------------------------------------------------------------------");
         System.out.println("Thank you for shopping with us!");
-
     }
+
+    public static void removeFromCart(ArrayList<Product> inventory,
+                                ArrayList<Product> cart,
+                                Scanner scanner) {
+        System.out.print("\nPlease write the ID of the product you'd like to remove from your cart: ");
+        String selectedID = scanner.nextLine();
+
+        Product foundProduct = findProductById(selectedID, cart);
+        if (foundProduct != null) {
+            System.out.printf("\n%s successfully removed from your cart!\n", foundProduct.getName());
+            cart.remove(foundProduct);
+            displayCart(inventory, cart, scanner);
+            return;
+        };
+
+        System.out.println("\nProduct ID not found.");
+        displayCart(inventory, cart, scanner);
+    }
+
 
 
     public static Product findProductById(String id, ArrayList<Product> inventory) {
