@@ -1,7 +1,8 @@
 package com.pluralsight;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -235,7 +236,8 @@ public class Store {
         }
 
         if (cashAmount >= totalAmount) {
-            printReceipt(cart, totalAmount, cashAmount);
+            System.out.println(buildReceipt(cart, totalAmount, cashAmount));
+            logReceipt(cart, totalAmount, cashAmount);
             cart.clear();
             System.exit(0);
         }
@@ -244,16 +246,21 @@ public class Store {
         displayCartMenu(inventory, cart, scanner, totalAmount);
     }
 
-    public static void printReceipt(ArrayList<Product> cart,
-                                double totalAmount,
-                                double cashAmount) {
-        HashMap<String, Integer> quantities = getQuantities(cart);
+    public static String buildReceipt(
+            ArrayList<Product> cart,
+            double totalAmount,
+            double cashAmount) {
 
+        StringBuilder receipt = new StringBuilder();
+
+        HashMap<String, Integer> quantities = getQuantities(cart);
         HashSet<String> printed = new HashSet<>();
 
-        System.out.printf("%-40s %-6s %-10s%n",
-                "NAME", "QTY", "PRICE");
-        System.out.println("----------------------------------------------------------");
+        receipt.append(String.format(
+                "%-40s %-6s %-10s%n",
+                "NAME", "QTY", "PRICE"));
+
+        receipt.append("----------------------------------------------------------\n");
 
         for (Product product : cart) {
 
@@ -261,24 +268,51 @@ public class Store {
                 continue;
             }
 
-            double addedPrice = product.getPrice() * quantities.get(product.getId());
+            double addedPrice =
+                    product.getPrice() * quantities.get(product.getId());
 
-            System.out.printf(
+            receipt.append(String.format(
                     "%-40s %-6s $%-9.2f%n",
                     product.getName(),
                     "x" + quantities.get(product.getId()),
                     addedPrice
-            );
+            ));
+
             printed.add(product.getId());
         }
 
-        System.out.println("----------------------------------------------------------");
-        System.out.printf("Total Price: $%.2f\n", totalAmount);
-        System.out.printf("Cash Paid: $%.2f\n", cashAmount);
         double changeAmount = cashAmount - totalAmount;
-        System.out.printf("Change: $%.2f\n", changeAmount);
-        System.out.println("----------------------------------------------------------");
-        System.out.println("Thank you for shopping with us!");
+
+        receipt.append("----------------------------------------------------------\n");
+        receipt.append(String.format("Total Price: $%.2f%n", totalAmount));
+        receipt.append(String.format("Cash Paid: $%.2f%n", cashAmount));
+        receipt.append(String.format("Change: $%.2f%n", changeAmount));
+        receipt.append("----------------------------------------------------------\n");
+        receipt.append("Thank you for shopping with us!\n");
+
+        return receipt.toString();
+    }
+
+    public static void logReceipt(ArrayList<Product> cart,
+                                    double totalAmount,
+                                    double cashAmount) {
+        try {
+            LocalDateTime printTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+            String formattedPrintTime = printTime.format(formatter);
+
+            File newFile = new File("receipts/" + formattedPrintTime + ".txt");
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(newFile));
+
+            bufferedWriter.write(
+                    buildReceipt(cart, totalAmount, cashAmount)
+            );
+
+            bufferedWriter.close();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void removeFromCart(ArrayList<Product> inventory,
