@@ -145,29 +145,18 @@ public class Store {
         displayProductsMenu(inventory, cart, scanner);
     }
 
-
     public static void displayCart(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
         if (cart.isEmpty()){
             System.out.println("\nYou have no items in your cart.");
             mainMenu(inventory, cart, scanner);
         }
 
-        HashMap<String, Integer> quantities = new HashMap<>();
-        for (Product product : cart) {
-            String id = product.getId();
-
-            quantities.put(
-                    id,
-                    quantities.getOrDefault(id, 0) + 1
-            );
-        }
-
         System.out.printf("\n%-10s %-40s %-6s %-10s%n",
                 "ID", "NAME", "QTY", "PRICE");
         System.out.println("-------------------------------------------------------------------");
 
+        HashMap<String, Integer> quantities = getQuantities(cart);
         double totalAmount = 0.00;
-
         HashSet<String> printed = new HashSet<>();
 
         for (Product product : cart) {
@@ -258,23 +247,37 @@ public class Store {
     public static void printReceipt(ArrayList<Product> cart,
                                 double totalAmount,
                                 double cashAmount) {
-        System.out.printf("\n%-40s %-10s",
-                "NAME", "PRICE");
-        System.out.println("\n--------------------------------------------------------------------------\n");
+        HashMap<String, Integer> quantities = getQuantities(cart);
+
+        HashSet<String> printed = new HashSet<>();
+
+        System.out.printf("%-40s %-6s %-10s%n",
+                "NAME", "QTY", "PRICE");
+        System.out.println("----------------------------------------------------------");
 
         for (Product product : cart) {
-            System.out.printf("%-40s $%-9.2f\n",
+
+            if (printed.contains(product.getId())) {
+                continue;
+            }
+
+            double addedPrice = product.getPrice() * quantities.get(product.getId());
+
+            System.out.printf(
+                    "%-40s %-6s $%-9.2f%n",
                     product.getName(),
-                    product.getPrice());
+                    "x" + quantities.get(product.getId()),
+                    addedPrice
+            );
+            printed.add(product.getId());
         }
 
-        System.out.println("-------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------");
         System.out.printf("Total Price: $%.2f\n", totalAmount);
         System.out.printf("Cash Paid: $%.2f\n", cashAmount);
         double changeAmount = cashAmount - totalAmount;
         System.out.printf("Change: $%.2f\n", changeAmount);
-
-        System.out.println("-------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------");
         System.out.println("Thank you for shopping with us!");
     }
 
@@ -297,7 +300,6 @@ public class Store {
     }
 
 
-
     public static Product findProductById(String id, ArrayList<Product> inventory) {
         for (Product product : inventory){
             if (id.equals(product.getId())){
@@ -305,5 +307,18 @@ public class Store {
             }
         }
         return null;
+    }
+
+    public static HashMap<String, Integer> getQuantities(ArrayList<Product> cart) {
+        HashMap<String, Integer> quantities = new HashMap<>();
+
+        for (Product product : cart) {
+            quantities.put(
+                    product.getId(),
+                    quantities.getOrDefault(product.getId(), 0) + 1
+            );
+        }
+
+        return quantities;
     }
 }
