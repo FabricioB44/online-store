@@ -67,7 +67,10 @@ public class Store {
             switch (choice) {
                 case 1 -> displayProducts(inventory, cart, scanner);
                 case 2 -> displayCart(inventory, cart, scanner);
-                case 3 -> System.out.println("Thank you for shopping with us!");
+                case 3 -> {
+                    System.out.println("\nThank you for shopping with us!");
+                    System.exit(0);
+                }
                 default -> System.out.println("Invalid choice!");
             }
         }
@@ -114,7 +117,10 @@ public class Store {
             switch (choice) {
                 case 1 -> addToCart(inventory, cart, scanner);
                 case 2 -> mainMenu(inventory, cart, scanner);
-                case 3 -> System.out.println("Thank you for shopping with us!");
+                case 3 -> {
+                    System.out.println("\nThank you for shopping with us!");
+                    System.exit(0);
+                }
                 default -> System.out.println("Invalid choice!");
             }
         }
@@ -189,7 +195,10 @@ public class Store {
                 case 1 -> checkOut(inventory, cart, totalAmount, scanner);
                 case 2 -> removeFromCart(inventory, cart, scanner);
                 case 3 -> mainMenu(inventory, cart, scanner);
-                case 4 -> System.out.println("Thank you for shopping with us!");
+                case 4 -> {
+                    System.out.println("\nThank you for shopping with us!");
+                    System.exit(0);
+                }
                 default -> System.out.println("Invalid choice!");
             }
         }
@@ -205,7 +214,7 @@ public class Store {
 
             try {
                 cashAmount = Double.parseDouble(scanner.nextLine());
-                break; // valid input, exit loop
+                break;
             } catch (NumberFormatException e) {
                 System.out.println("Please enter a valid dollar amount.");
             }
@@ -214,8 +223,10 @@ public class Store {
         if (cashAmount >= totalAmount) {
             printReceipt(cart, totalAmount, cashAmount);
             cart.clear();
+            System.exit(0);
         }
-        System.out.println("\nNot enough cash to complete the transaction!");
+
+        System.out.println("\nNot enough cash to complete the transaction.");
         displayCartMenu(inventory, cart, scanner, totalAmount);
     }
 
@@ -224,7 +235,7 @@ public class Store {
                                 double cashAmount) {
         System.out.printf("\n%-40s %-10s",
                 "NAME", "PRICE");
-        System.out.println("--------------------------------------------------------------------------\n");
+        System.out.println("\n--------------------------------------------------------------------------\n");
 
         for (Product product : cart) {
             System.out.printf("%-40s $%-9.2f\n",
