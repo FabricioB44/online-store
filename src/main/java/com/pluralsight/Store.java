@@ -93,6 +93,20 @@ public class Store {
     public static void displayProducts(ArrayList<Product> inventory,
                                        ArrayList<Product> cart,
                                        Scanner scanner) {
+
+        System.out.printf("%-10s %-40s %-10s %-15s%n",
+                "ID", "NAME", "PRICE", "DEPARTMENT");
+        System.out.println("--------------------------------------------------------------------------");
+
+        for (Product product : inventory) {
+            System.out.printf("%-10s %-40s $%-9.2f %-15s%n",
+                    product.getId(),
+                    product.getName(),
+                    product.getPrice(),
+                    product.getDepartment());
+        }
+
+
         // TODO: show each product (id, name, price),
         //       prompt for an id, find that product, add to cart
     }
