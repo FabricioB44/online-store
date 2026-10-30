@@ -236,6 +236,7 @@ public class Store {
         }
 
         if (cashAmount >= totalAmount) {
+            System.out.println();
             System.out.println(buildReceipt(cart, totalAmount, cashAmount));
             logReceipt(cart, totalAmount, cashAmount);
             cart.clear();
