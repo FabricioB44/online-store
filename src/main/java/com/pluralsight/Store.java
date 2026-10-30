@@ -3,6 +3,8 @@ package com.pluralsight;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class Store {
@@ -133,7 +135,7 @@ public class Store {
 
         Product foundProduct = findProductById(selectedID, inventory);
         if (foundProduct != null) {
-            System.out.printf("\n%s successfully added to your cart!\n", foundProduct.getName());
+            System.out.printf("\n%s successfully added to your cart.\n", foundProduct.getName());
             cart.add(foundProduct);
             displayProductsMenu(inventory, cart, scanner);
             return;
@@ -146,27 +148,50 @@ public class Store {
 
     public static void displayCart(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
         if (cart.isEmpty()){
-            System.out.println("\nYou have no items in your cart!");
+            System.out.println("\nYou have no items in your cart.");
             mainMenu(inventory, cart, scanner);
         }
 
-        System.out.printf("\n%-10s %-40s %-10s %-15s%n",
-                "ID", "NAME", "PRICE", "DEPARTMENT");
-        System.out.println("--------------------------------------------------------------------------");
+        HashMap<String, Integer> quantities = new HashMap<>();
+        for (Product product : cart) {
+            String id = product.getId();
+
+            quantities.put(
+                    id,
+                    quantities.getOrDefault(id, 0) + 1
+            );
+        }
+
+        System.out.printf("\n%-10s %-40s %-6s %-10s%n",
+                "ID", "NAME", "QTY", "PRICE");
+        System.out.println("-------------------------------------------------------------------");
 
         double totalAmount = 0.00;
 
+        HashSet<String> printed = new HashSet<>();
+
         for (Product product : cart) {
-            totalAmount += product.getPrice();
-            System.out.printf("%-10s %-40s $%-9.2f %-15s%n",
+
+            if (printed.contains(product.getId())) {
+                continue;
+            }
+
+            double addedPrice = product.getPrice() * quantities.get(product.getId());
+
+            System.out.printf(
+                    "%-10s %-40s %-6s $%-9.2f%n",
                     product.getId(),
                     product.getName(),
-                    product.getPrice(),
-                    product.getDepartment());
+                    "x" + quantities.get(product.getId()),
+                    addedPrice
+            );
+
+            printed.add(product.getId());
+            totalAmount += addedPrice;
         }
 
-        System.out.println("-------------------------------------------------------------------------");
-        System.out.printf("Total Price: %.2f\n", totalAmount);
+        System.out.println("-------------------------------------------------------------------");
+        System.out.printf("Total Price: $%.2f\n", totalAmount);
 
         displayCartMenu(inventory, cart, scanner, totalAmount);
     }
@@ -244,10 +269,10 @@ public class Store {
         }
 
         System.out.println("-------------------------------------------------------------------------");
-        System.out.printf("Total Price: %.2f\n", totalAmount);
-        System.out.printf("Cash Paid: %.2f\n", cashAmount);
+        System.out.printf("Total Price: $%.2f\n", totalAmount);
+        System.out.printf("Cash Paid: $%.2f\n", cashAmount);
         double changeAmount = cashAmount - totalAmount;
-        System.out.printf("Change: %.2f\n", changeAmount);
+        System.out.printf("Change: $%.2f\n", changeAmount);
 
         System.out.println("-------------------------------------------------------------------------");
         System.out.println("Thank you for shopping with us!");
