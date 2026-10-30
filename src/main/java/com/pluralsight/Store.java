@@ -84,7 +84,7 @@ public class Store {
 
             switch (choice) {
                 case 1 -> displayProducts(inventory, cart, scanner);
-                case 2 -> displayCart(cart, scanner);
+                case 2 -> displayCart(inventory, cart, scanner);
                 case 3 -> System.out.println("Thank you for shopping with us!");
                 default -> System.out.println("Invalid choice!");
             }
@@ -96,7 +96,7 @@ public class Store {
                                        ArrayList<Product> cart,
                                        Scanner scanner) {
 
-        System.out.printf("%-10s %-40s %-10s %-15s%n",
+        System.out.printf("\n%-10s %-40s %-10s %-15s%n",
                 "ID", "NAME", "PRICE", "DEPARTMENT");
         System.out.println("--------------------------------------------------------------------------");
 
@@ -146,6 +146,7 @@ public class Store {
         Product foundProduct = findProductById(selectedID, inventory);
         if (foundProduct != null) {
             System.out.printf("\n%s successfully added to your cart!\n", foundProduct.getName());
+            cart.add(foundProduct);
             displayProductsMenu(inventory, cart, scanner);
             return;
         };
@@ -158,7 +159,33 @@ public class Store {
      * Shows the contents of the cart, calculates the total,
      * and offers the option to check out.
      */
-    public static void displayCart(ArrayList<Product> cart, Scanner scanner) {
+    public static void displayCart(ArrayList<Product> inventory, ArrayList<Product> cart, Scanner scanner) {
+        if (cart.isEmpty()){
+            System.out.println("You have no items in your cart!\n");
+            mainMenu(inventory, cart, scanner);
+        }
+
+        System.out.printf("\n%-10s %-40s %-10s %-15s%n",
+                "ID", "NAME", "PRICE", "DEPARTMENT");
+        System.out.println("--------------------------------------------------------------------------");
+
+        double totalPrice = 0.00;
+
+        for (Product product : cart) {
+            totalPrice += product.getPrice();
+            System.out.printf("%-10s %-40s $%-9.2f %-15s%n",
+                    product.getId(),
+                    product.getName(),
+                    product.getPrice(),
+                    product.getDepartment());
+        }
+
+        System.out.println("-------------------------------------------------------------------------");
+        System.out.printf("Total Price: %.2f", totalPrice);
+
+        // displayProductsMenu(cart, scanner);
+
+
         // TODO:
         //   • list each product in the cart
         //   • compute the total cost
@@ -179,11 +206,7 @@ public class Store {
         // TODO: implement steps listed above
     }
 
-    /**
-     * Searches a list for a product by its id.
-     *
-     * @return the matching Product, or null if not found
-     */
+
     public static Product findProductById(String id, ArrayList<Product> inventory) {
         for (Product product : inventory){
             if (id.equals(product.getId())){
